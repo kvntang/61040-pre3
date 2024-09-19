@@ -24,22 +24,31 @@ export default class SessioningConcept {
     // Hint: Take a look at how the "end" function makes sure the user is logged in. Keep in mind that a
     // synchronization like starting a session should just consist of a series of actions that may throw
     // exceptions and should not have its own control flow.
-    session.user = username;
+    try {
+      this.isLoggedIn(session); // Check if a user is already logged in
+      throw new Error(`Session already active for user ${session.user}! Please log out first.`); // Include current user in error message
+    } catch (e) {
+      if (e instanceof UnauthenticatedError) { // If user is not logged in (UnauthenticatedError), start the session
+        session.user = username; // Start a new session by setting the user
+      } else {
+        throw e; // Rethrow any other error
+      }
+    }
   }
 
   end(session: SessionDoc) {
-    this.isLoggedIn(session);
-    session.user = undefined;
+    this.isLoggedIn(session); //check if the user is logged in
+    session.user = undefined; //end the session
   }
 
   getUser(session: SessionDoc) {
-    this.isLoggedIn(session);
-    return session.user!;
+    this.isLoggedIn(session); //check if the user is logged in
+    return session.user!; //return the user
   }
 
   isLoggedIn(session: SessionDoc) {
-    if (session.user === undefined) {
-      throw new UnauthenticatedError("Must be logged in!");
+    if (session.user === undefined) { //if no user is logged in
+      throw new UnauthenticatedError("Must be logged in!"); //throw an error
     }
   }
 }

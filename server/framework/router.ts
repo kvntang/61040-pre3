@@ -134,7 +134,7 @@ export class Router {
         }
       } catch (e: unknown) {
         const error = (await Router.handleError(e as Error)) as Error & { HTTP_CODE?: number };
-        res.status(error.HTTP_CODE ?? 500).json({ msg: error.message ?? "Internal Server Error" });
+        res.status(error.HTTP_CODE ?? 500).json({ msg: error.message ?? "Internal Server Error"});
         return;
       }
       res.json(result);
