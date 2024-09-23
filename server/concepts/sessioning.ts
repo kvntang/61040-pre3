@@ -17,23 +17,9 @@ declare module "express-session" {
  */
 export default class SessioningConcept {
   start(session: SessionDoc, username: string) {
-    // In Express, the session is created spontaneously when the connection is first made, so we do not need
-    // to explicitly allocate a session; we only need to keep track of the user.
+    this.isLoggedOut(session);
+    session.user = username;
 
-    // TODO: Make sure the user is logged out before allowing a new session to start.
-    // Hint: Take a look at how the "end" function makes sure the user is logged in. Keep in mind that a
-    // synchronization like starting a session should just consist of a series of actions that may throw
-    // exceptions and should not have its own control flow.
-    try {
-      this.isLoggedIn(session); // Check if a user is already logged in
-      throw new Error(`Session already active for user ${session.user}! Please log out first.`); // Include current user in error message
-    } catch (e) {
-      if (e instanceof UnauthenticatedError) { // If user is not logged in (UnauthenticatedError), start the session
-        session.user = username; // Start a new session by setting the user
-      } else {
-        throw e; // Rethrow any other error
-      }
-    }
   }
 
   end(session: SessionDoc) {
@@ -49,6 +35,12 @@ export default class SessioningConcept {
   isLoggedIn(session: SessionDoc) {
     if (session.user === undefined) { //if no user is logged in
       throw new UnauthenticatedError("Must be logged in!"); //throw an error
+    }
+  }
+
+  isLoggedOut(session: SessionDoc) {
+    if (session.user !== undefined) { //if a user is logged in
+      throw new Error(`User ${session.user} is logged in! Please log out first.`); //throw an error
     }
   }
 }
